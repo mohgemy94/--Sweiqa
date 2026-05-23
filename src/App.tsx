@@ -10,7 +10,6 @@ import CategoriesScreen from './components/CategoriesScreen';
 import CartScreen from './components/CartScreen';
 import ProfileScreen from './components/ProfileScreen';
 import ProductDetailModal from './components/ProductDetailModal';
-import ArchitectureViewer from './components/ArchitectureViewer';
 import CategoriesDrawer from './components/CategoriesDrawer';
 
 // Lucide Icons
@@ -19,13 +18,6 @@ import {
   Layers, 
   ShoppingCart, 
   User, 
-  Sparkles, 
-  Smartphone,
-  Expand,
-  Layout,
-  VolumeX,
-  Radio,
-  Clock,
   Menu,
   Search,
   Mic
@@ -121,9 +113,6 @@ export default function App() {
   // Navigation filters mapping
   const [filterCatId, setFilterCatId] = useState<string>('halal_market');
   const [filterSubId, setFilterSubId] = useState<string>('');
-
-  // Mode toggling: show expanded web viewport vs simulated phone mockup
-  const [isFullscreenPhone, setIsFullscreenPhone] = useState(false);
 
   // Shopping Cart calculations
   const totalCartItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -278,306 +267,225 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans" dir="rtl">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans pb-24 md:pb-12" dir="rtl">
       
-      {/* Top Universal Navbar */}
-      <header className="bg-white border-b border-slate-200/80 sticky top-0 z-40 px-4 md:px-8 py-4 shadow-xs">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-teal-700 text-white p-2.5 rounded-2xl shadow-md font-sans text-lg font-black tracking-wider animate-pulse">
-              🌾 صعيد
-            </div>
-            <div>
-              <h1 className="text-md sm:text-lg font-black text-slate-900 font-sans tracking-tight">
-                سوق الصعيد التجاري - مركز بني مزار 📍
-              </h1>
-              <p className="text-gray-500 text-[10px] sm:text-xs font-medium">
-                بوابة التبيان البرمجية التجريبية • تطبيق الهاتف الهجين (React Native / Web)
-              </p>
-            </div>
-          </div>
+      {/* Dynamic Top App Header with Drawer Triggers & Search bar */}
+      <header className="bg-white border-b border-slate-100/80 px-4 md:px-6 py-4 sticky top-0 z-40 shadow-xs">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            {/* Logo and Menu Panel trigger */}
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsDrawerOpen(true)}
+                className="p-2.5 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-xl transition-all border border-teal-100 flex items-center justify-center cursor-pointer"
+                title="قائمة الأقسام الكاملة"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
 
-          {/* Quick status details */}
-          <div className="flex items-center gap-3">
-            <div className="text-xs bg-teal-50 text-teal-800 px-3.5 py-1.5 rounded-full font-bold border border-teal-100 flex items-center gap-1.5 shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-ping"></span>
-              <span>خادم بني مزار نشط وحي 🟢</span>
+              <div 
+                onClick={() => { setActiveTab('home'); setSearchQuery(''); }}
+                className="flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform"
+              >
+                <span className="text-base sm:text-lg font-black text-teal-900 tracking-wider font-sans">
+                  سوق الصعيد 🌾
+                </span>
+              </div>
             </div>
 
-            <button
-              onClick={() => setIsFullscreenPhone(!isFullscreenPhone)}
-              className="px-3 py-1.5 bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-800 rounded-xl text-xs font-bold border border-slate-205 flex items-center gap-1.5 transition-all"
-              title="تغيير نمط تصفح الهاتف"
+            {/* Quick sections shortcuts overlay badge */}
+            <button 
+              onClick={() => setIsDrawerOpen(true)}
+              className="text-xs bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-black cursor-pointer hover:bg-teal-50 hover:border-teal-200 transition-all font-sans"
             >
-              {isFullscreenPhone ? <Layout className="w-3.5 h-3.5" /> : <Expand className="w-3.5 h-3.5" />}
-              <span>{isFullscreenPhone ? 'عرض شريط المطور الجانبي' : 'تكبير الهاتف بملء الشاشة'}</span>
+              كل الأقسام 📋
             </button>
           </div>
+
+          {/* Search bar - centered and clean */}
+          <div className="flex-grow w-full max-w-xl relative">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث عن: عجل بلدي، غسالات، عبايات، زيت طعام..."
+                className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-400 text-xs py-3 pr-9 pl-16 rounded-xl border border-slate-200 focus:border-teal-700 focus:bg-white outline-none transition-all font-sans text-right"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-800 w-4 h-4" />
+              
+              {/* Voice Search Mic Button */}
+              <button
+                onClick={handleVoiceSearch}
+                className={`absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                  isListening 
+                    ? 'bg-rose-500 text-white animate-pulse shadow-xs shadow-rose-200' 
+                    : 'text-teal-700 hover:text-teal-900 bg-teal-50 hover:bg-teal-100'
+                }`}
+                title="البحث الصوتي"
+              >
+                <Mic className="w-3.5 h-3.5" />
+              </button>
+
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute left-10 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600 font-sans px-1"
+                >
+                  إلغاء
+                </button>
+              )}
+            </div>
+
+            {/* Speech Recognition Overlay Feedback */}
+            {isListening && (
+              <div className="absolute left-0 right-0 top-13 bg-teal-950/95 backdrop-blur-md text-white p-4 rounded-xl z-50 flex flex-col items-center justify-center space-y-3 font-sans shadow-lg border border-teal-800 animate-fade-in">
+                <div className="flex items-center gap-1.5 justify-center">
+                  <span className="w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping"></span>
+                  <span className="text-[10px] font-bold text-teal-200">صوت غامر نشط • جاري الاستماع في بني مزار</span>
+                </div>
+                <p className="text-xs font-black text-center text-white px-2 animate-pulse leading-normal">
+                  {recognitionText || "تحدث الآن للبحث..."}
+                </p>
+                <div className="flex justify-center items-end gap-1 h-5 my-1">
+                  <span className="w-1 bg-teal-400 rounded-full animate-bounce animate-duration-1" style={{ height: '70%' }}></span>
+                  <span className="w-1 bg-teal-300 rounded-full animate-bounce animate-duration-3" style={{ height: '95%' }}></span>
+                  <span className="w-1 bg-teal-500 rounded-full animate-bounce" style={{ height: '40%' }}></span>
+                  <span className="w-1 bg-teal-400 rounded-full animate-bounce animate-duration-4" style={{ height: '80%' }}></span>
+                  <span className="w-1 bg-rose-400 rounded-full animate-bounce" style={{ height: '60%' }}></span>
+                </div>
+                <button 
+                  onClick={() => setIsListening(false)}
+                  className="text-[10px] bg-white/10 hover:bg-white/25 border border-white/20 text-white font-bold px-4 py-1.5 rounded-full"
+                >
+                  إلغاء الاستماع ✖
+                </button>
+              </div>
+            )}
+
+            {voiceError && (
+              <div className="absolute left-2 right-2 top-13 bg-rose-50 border border-rose-200 text-rose-800 p-2.5 rounded-xl text-center text-[10px] font-bold z-50 shadow-md font-sans flex items-center justify-center gap-1.5 animate-bounce">
+                <span>⚠️</span>
+                <span>{voiceError}</span>
+              </div>
+            )}
+          </div>
+
         </div>
       </header>
 
-      {/* Main Workspace Grid layout */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        {/* RIGHT COLUMN: Smartphone Simulator (The actual interactive React Applet) */}
-        <div className={`${isFullscreenPhone ? 'lg:col-span-12' : 'lg:col-span-5'} flex justify-center w-full transition-all duration-300`}>
-          <div className="w-full max-w-md bg-slate-950 p-3 sm:p-4 rounded-[40px] shadow-2xl border-4 border-slate-800 relative ring-12 ring-slate-900/30">
-            
-            {/* iPhone Notch Speaker */}
-            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-32 h-5 bg-black rounded-b-2xl z-30 flex items-center justify-center">
-              <div className="w-12 h-1 bg-gray-800 rounded-full mb-1"></div>
-            </div>
-
-            {/* Simulated Phone Screen Canvas */}
-            <div className="bg-white rounded-[28px] overflow-hidden min-h-[640px] max-h-[760px] overflow-y-auto flex flex-col relative border border-slate-900 shadow-inner">
-              
-              {/* Simulated Status Bar with Arabic Time */}
-              <div className="bg-white px-5 pt-4 pb-2 flex justify-between items-center text-[10px] font-bold text-gray-800 z-20 select-none">
-                <span className="font-sans">07:24 ص</span>
-                <span className="text-[9px] bg-teal-50 text-teal-800 px-1.5 py-0.2 rounded font-mono font-bold">بني مزار - المنيا</span>
-                <div className="flex items-center gap-1 font-mono">
-                  <span>5G</span>
-                  <span>📶</span>
-                  <span>🔋 96%</span>
-                </div>
-              </div>
-
-              {/* Dynamic Top App Header with Drawer Triggers & Hidden Scroll Search */}
-              <div className="bg-white border-b border-slate-100/80 px-4 py-3 flex flex-col z-20 sticky top-0 shadow-xs">
-                {/* Branding and Hamburguer Menu */}
-                <div className="flex items-center justify-between">
-                  {/* Hamburger Menu on the right (RTL: top right of app) */}
-                  <button 
-                    onClick={() => setIsDrawerOpen(true)}
-                    className="p-1.5 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-xl transition-all border border-teal-100 flex items-center justify-center cursor-pointer"
-                    title="قائمة الأقسام الكاملة"
-                  >
-                    <Menu className="w-5 h-5" />
-                  </button>
-
-                  {/* Logo Center */}
-                  <div 
-                    onClick={() => { setActiveTab('home'); setSearchQuery(''); }}
-                    className="flex items-center gap-1 cursor-pointer select-none active:scale-95 transition-transform"
-                  >
-                    <span className="text-xs sm:text-sm font-black text-teal-900 tracking-wider font-sans">
-                      سوق الصعيد 🌾
-                    </span>
-                  </div>
-
-                  {/* Right side helper / active zone badge (LRT left side) */}
-                  <div 
-                    onClick={() => setIsDrawerOpen(true)}
-                    className="text-[9px] bg-slate-50 border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg font-black cursor-pointer hover:bg-teal-50 hover:border-teal-200 transition-all font-sans"
-                  >
-                    كل الأقسام 📋
-                  </div>
-                </div>
-
-                {/* Search Bar - disappears on scroll, appears on idle */}
-                <div 
-                  className={`transition-all duration-300 ease-in-out origin-top relative ${
-                    isSearchVisible 
-                      ? 'max-h-16 opacity-100 mt-2.5 pb-0.5' 
-                      : 'max-h-0 opacity-0 overflow-hidden mt-0 pb-0 pointer-events-none'
-                  }`}
-                >
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="ابحث عن: عجل بلدي، غسالات، عبايات، زيت طعام..."
-                      className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-400 text-[10px] sm:text-[11px] py-2.5 pr-8.5 pl-16 rounded-xl border border-slate-200 focus:border-teal-700 focus:bg-white outline-none transition-all font-sans text-right"
-                    />
-                    <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 text-teal-800 w-3.5 h-3.5" />
-                    
-                    {/* Voice Search Mic Button */}
-                    <button
-                      onClick={handleVoiceSearch}
-                      className={`absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
-                        isListening 
-                          ? 'bg-rose-500 text-white animate-pulse shadow-xs shadow-rose-200' 
-                          : 'text-teal-700 hover:text-teal-900 bg-teal-50 hover:bg-teal-100'
-                      }`}
-                      title="البحث الصوتي"
-                    >
-                      <Mic className="w-3.5 h-3.5" />
-                    </button>
-
-                    {searchQuery && (
-                      <button 
-                        onClick={() => setSearchQuery('')}
-                        className="absolute left-10 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-400 hover:text-slate-600 font-sans px-1"
-                      >
-                        إلغاء
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Speech Recognition Overlay Feedback */}
-                  {isListening && (
-                    <div className="absolute left-0 right-0 top-11 bg-teal-950/95 backdrop-blur-md text-white p-4 rounded-xl z-50 flex flex-col items-center justify-center space-y-3 font-sans shadow-lg border border-teal-800 animate-fade-in">
-                      <div className="flex items-center gap-1.5 justify-center">
-                        <span className="w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping"></span>
-                        <span className="text-[10px] font-bold text-teal-200">صوت غامر نشط • جاري الاستماع في بني مزار</span>
-                      </div>
-                      <p className="text-xs font-black text-center text-white px-2 animate-pulse leading-normal">
-                        {recognitionText || "تحدث الآن للبحث..."}
-                      </p>
-                      {/* Animated acoustic waves */}
-                      <div className="flex justify-center items-end gap-1 h-5 my-1">
-                        <span className="w-1 bg-teal-400 rounded-full animate-bounce" style={{ height: '70%', animationSpeed: '0.1s' }}></span>
-                        <span className="w-1 bg-teal-300 rounded-full animate-bounce" style={{ height: '95%', animationSpeed: '0.3s' }}></span>
-                        <span className="w-1 bg-teal-500 rounded-full animate-bounce" style={{ height: '40%', animationSpeed: '0.2s' }}></span>
-                        <span className="w-1 bg-teal-400 rounded-full animate-bounce" style={{ height: '80%', animationSpeed: '0.4s' }}></span>
-                        <span className="w-1 bg-rose-400 rounded-full animate-bounce" style={{ height: '60%', animationSpeed: '0.15s' }}></span>
-                      </div>
-                      <button 
-                        onClick={() => setIsListening(false)}
-                        className="text-[9px] bg-white/10 hover:bg-white/25 border border-white/20 text-white font-bold px-3 py-1 rounded-full px-4"
-                      >
-                        إلغاء الاستماع ✖
-                      </button>
-                    </div>
-                  )}
-
-                  {voiceError && (
-                    <div className="absolute left-2 right-2 top-11 bg-rose-50 border border-rose-200 text-rose-800 p-2.5 rounded-xl text-center text-[10px] font-bold z-50 shadow-md font-sans flex items-center justify-center gap-1.5 animate-bounce">
-                      <span>⚠️</span>
-                      <span>{voiceError}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Interactive View Routing */}
-              <div 
-                className="flex-1 px-4 overflow-y-auto scrollbar-hide pt-2"
-                onScroll={handleMobileScroll}
-              >
-                {activeTab === 'home' && (
-                  <HomeScreen 
-                    onSelectProduct={handleSelectProduct}
-                    onAddToCart={handleAddToCart}
-                    cartProductIds={cartItems.map(item => item.product.id)}
-                    onChangeTab={setActiveTab}
-                    onSelectCategoryFilter={handleSelectCategoryFilter}
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    favoriteProductIds={favoriteProductIds}
-                    onToggleFavorite={handleToggleFavorite}
-                  />
-                )}
-                {activeTab === 'categories' && (
-                  <CategoriesScreen 
-                    onSelectProduct={handleSelectProduct}
-                    onAddToCart={handleAddToCart}
-                    cartProductIds={cartItems.map(item => item.product.id)}
-                    initialCategory={filterCatId}
-                    initialSubCategory={filterSubId}
-                    searchQuery={searchQuery}
-                    favoriteProductIds={favoriteProductIds}
-                    onToggleFavorite={handleToggleFavorite}
-                  />
-                )}
-                {activeTab === 'cart' && (
-                  <CartScreen 
-                    cartItems={cartItems}
-                    onUpdateQuantity={handleUpdateQuantity}
-                    onRemoveItem={handleRemoveItem}
-                    onClearCart={handleClearCart}
-                  />
-                )}
-                {activeTab === 'profile' && (
-                  <ProfileScreen 
-                    favoriteProductIds={favoriteProductIds}
-                    onSelectProduct={handleSelectProduct}
-                    onAddToCart={handleAddToCart}
-                    cartProductIds={cartItems.map(item => item.product.id)}
-                    onToggleFavorite={handleToggleFavorite}
-                  />
-                )}
-              </div>
-
-              {/* Categories Navigation Slide-out Drawer Panel overlay */}
-              <CategoriesDrawer 
-                isOpen={isDrawerOpen} 
-                onClose={() => setIsDrawerOpen(false)} 
-                onSelectCategory={handleSelectDrawerCategory} 
-              />
-
-              {/* Dynamic Bottom Navigation Tab Bar (similar to Noon Native Applet) */}
-              <div className="bg-white border-t border-slate-100 px-2 py-2 flex justify-around items-center sticky bottom-0 z-30 shadow-lg select-none">
-                
-                {/* Home tab */}
-                <button
-                  onClick={() => setActiveTab('home')}
-                  className={`flex flex-col items-center gap-1 py-1 px-3.5 rounded-xl transition-all ${
-                    activeTab === 'home' ? 'text-teal-700 bg-teal-50/50' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <Home className={`w-5 h-5 ${activeTab === 'home' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
-                  <span className="text-[9px] font-black">الرئيسية</span>
-                </button>
-
-                {/* Categories Tab */}
-                <button
-                  onClick={() => {
-                    setFilterCatId('halal_market');
-                    setFilterSubId('');
-                    setActiveTab('categories');
-                  }}
-                  className={`flex flex-col items-center gap-1 py-1 px-3.5 rounded-xl transition-all ${
-                    activeTab === 'categories' ? 'text-teal-700 bg-teal-50/50' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <Layers className={`w-5 h-5 ${activeTab === 'categories' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
-                  <span className="text-[9px] font-black">الأقسام</span>
-                </button>
-
-                {/* Shopping Cart Tab */}
-                <button
-                  onClick={() => setActiveTab('cart')}
-                  className={`flex flex-col items-center gap-1 py-1 px-3.5 rounded-xl relative transition-all ${
-                    activeTab === 'cart' ? 'text-teal-700 bg-teal-50/50' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <ShoppingCart className={`w-5 h-5 ${activeTab === 'cart' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
-                  <span className="text-[9px] font-black">السلة</span>
-                  
-                  {totalCartItemsCount > 0 && (
-                    <span className="absolute -top-1 -right-0.5 bg-rose-500 text-white font-sans font-bold text-[8px] h-4 min-w-4 px-1 rounded-full flex items-center justify-center border border-white">
-                      {totalCartItemsCount}
-                    </span>
-                  )}
-                </button>
-
-                {/* Profile Tab */}
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className={`flex flex-col items-center gap-1 py-1 px-3.5 rounded-xl transition-all ${
-                    activeTab === 'profile' ? 'text-teal-700 bg-teal-50/50' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  <User className={`w-5 h-5 ${activeTab === 'profile' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
-                  <span className="text-[9px] font-black">حسابي</span>
-                </button>
-
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        {/* LEFT COLUMN: Developer Reference, Schemas & React Native source copy center */}
-        {!isFullscreenPhone && (
-          <div className="lg:col-span-7 space-y-4">
-            <ArchitectureViewer />
-          </div>
+      {/* Interactive Content View Area */}
+      <main className="flex-grow max-w-5xl w-full mx-auto px-4 py-6 md:py-8">
+        {activeTab === 'home' && (
+          <HomeScreen 
+            onSelectProduct={handleSelectProduct}
+            onAddToCart={handleAddToCart}
+            cartProductIds={cartItems.map(item => item.product.id)}
+            onChangeTab={setActiveTab}
+            onSelectCategoryFilter={handleSelectCategoryFilter}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            favoriteProductIds={favoriteProductIds}
+            onToggleFavorite={handleToggleFavorite}
+          />
         )}
-
+        {activeTab === 'categories' && (
+          <CategoriesScreen 
+            onSelectProduct={handleSelectProduct}
+            onAddToCart={handleAddToCart}
+            cartProductIds={cartItems.map(item => item.product.id)}
+            initialCategory={filterCatId}
+            initialSubCategory={filterSubId}
+            searchQuery={searchQuery}
+            favoriteProductIds={favoriteProductIds}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        )}
+        {activeTab === 'cart' && (
+          <CartScreen 
+            cartItems={cartItems}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemoveItem={handleRemoveItem}
+            onClearCart={handleClearCart}
+          />
+        )}
+        {activeTab === 'profile' && (
+          <ProfileScreen 
+            favoriteProductIds={favoriteProductIds}
+            onSelectProduct={handleSelectProduct}
+            onAddToCart={handleAddToCart}
+            cartProductIds={cartItems.map(item => item.product.id)}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        )}
       </main>
+
+      {/* Categories Navigation Slide-out Drawer Panel overlay */}
+      <CategoriesDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
+        onSelectCategory={handleSelectDrawerCategory} 
+      />
+
+      {/* Dynamic Bottom Navigation Tab Bar (Floating Premium Navigation Island on Desktop, Fixed Solid on Mobile) */}
+      <div className="bg-white/95 backdrop-blur-md border border-slate-200/50 px-4 py-2.5 flex justify-around items-center fixed bottom-0 left-0 right-0 md:left-1/2 md:-translate-x-1/2 md:bottom-5 md:max-w-md w-full z-40 shadow-2xl md:rounded-2xl select-none">
+        
+        {/* Home tab */}
+        <button
+          onClick={() => setActiveTab('home')}
+          className={`flex flex-col items-center gap-1.5 py-1 px-4 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'home' ? 'text-teal-700 bg-teal-50' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Home className={`w-5 h-5 ${activeTab === 'home' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
+          <span className="text-[10px] font-black">الرئيسية</span>
+        </button>
+
+        {/* Categories Tab */}
+        <button
+          onClick={() => {
+            setFilterCatId('halal_market');
+            setFilterSubId('');
+            setActiveTab('categories');
+          }}
+          className={`flex flex-col items-center gap-1.5 py-1 px-4 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'categories' ? 'text-teal-700 bg-teal-50' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Layers className={`w-5 h-5 ${activeTab === 'categories' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
+          <span className="text-[10px] font-black">الأقسام</span>
+        </button>
+
+        {/* Shopping Cart Tab */}
+        <button
+          onClick={() => setActiveTab('cart')}
+          className={`flex flex-col items-center gap-1.5 py-1 px-4 rounded-xl relative transition-all cursor-pointer ${
+            activeTab === 'cart' ? 'text-teal-700 bg-teal-50' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <ShoppingCart className={`w-5 h-5 ${activeTab === 'cart' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
+          <span className="text-[10px] font-black">السلة</span>
+          
+          {totalCartItemsCount > 0 && (
+            <span className="absolute -top-1 -right-0.5 bg-rose-500 text-white font-sans font-bold text-[8px] h-4 min-w-4 px-1 rounded-full flex items-center justify-center border border-white">
+              {totalCartItemsCount}
+            </span>
+          )}
+        </button>
+
+        {/* Profile Tab */}
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`flex flex-col items-center gap-1.5 py-1 px-4 rounded-xl transition-all cursor-pointer ${
+            activeTab === 'profile' ? 'text-teal-700 bg-teal-50' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <User className={`w-5 h-5 ${activeTab === 'profile' ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
+          <span className="text-[10px] font-black">حسابي</span>
+        </button>
+
+      </div>
 
       {/* Product Information Overlay Modal popup sheet */}
       <ProductDetailModal 
@@ -588,13 +496,13 @@ export default function App() {
       />
 
       {/* Footer system status */}
-      <footer className="bg-slate-950 text-slate-400 text-xs py-5 px-4 text-center border-t border-slate-900 mt-12">
-        <div className="max-w-7xl mx-auto space-y-2">
+      <footer className="bg-slate-950 text-slate-400 text-xs py-6 px-4 text-center border-t border-slate-900 mt-12">
+        <div className="max-w-5xl mx-auto space-y-2">
           <p className="font-sans leading-relaxed text-slate-300">
-            سوق الصعيد التجاري • بني مزار • محافظه المنيا 🌾
+            سوق الصعيد التجاري • بني مزار • لخدمة مجالس قرى صندفا، أبوجرج، القيس، بني علي، وصفط 🌾
           </p>
           <p className="text-[10px] text-slate-500 max-w-xl mx-auto font-sans leading-relaxed">
-            جميع البيانات والصور والمخططات الهندسية للأقسام وتفرعات المواشي والبيض محاكاة بمستوى إنتاجى لخدمة مجالس قرى صندفا، أبوجرج، القيس، بني علي، وصفط. الكود متوافق تماماً مع معايير React Native 0.73+ و TypeSafe TypeScript بنسبة 100%.
+            جميع المنتجات والأسعار مستوحاة من البيئة التجارية لمركز بني مزار وقرى صندفا، أبوجرج، القيس، بني علي، وصفط.
           </p>
         </div>
       </footer>
