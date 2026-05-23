@@ -169,68 +169,100 @@ export default function App() {
       
       let subId = '';
       if (subCategoryName) {
-        if (subCategoryName.includes('عجول') || subCategoryName.includes('تربية')) {
-          subId = 'calves';
-        } else if (subCategoryName.includes('خرفان') || subCategoryName.includes('أغنام')) {
-          subId = 'sheep';
-        } else if (subCategoryName.includes('ماعز') || subCategoryName.includes('جديان')) {
-          subId = 'goats';
-        } else if (subCategoryName.includes('طيور') || subCategoryName.includes('أرانب') || subCategoryName.includes('بط')) {
-          subId = 'rabbits';
-        } else if (subCategoryName.includes('بيض')) {
-          subId = 'eggs';
-        } else if (subCategoryName.includes('سمن') || subCategoryName.includes('زيوت')) {
-          subId = 'oil_grains';
-        } else if (subCategoryName.includes('ألبان') || subCategoryName.includes('جبن')) {
-          subId = 'dairy';
-        } else if (subCategoryName.includes('شاشات')) {
-          subId = 'screens';
-        } else if (subCategoryName.includes('جلابيات')) {
-          subId = 'traditional';
-        } else if (subCategoryName.includes('رجالي')) {
-          subId = 'casual';
-        } else if (subCategoryName.includes('أطفال')) {
-          subId = 'children';
-        } else if (subCategoryName.includes('داخلية')) {
-          subId = 'underwear_lingerie';
-        } else if (subCategoryName.includes('أحذية') || subCategoryName.includes('الأحذية')) {
-          subId = 'shoes';
-        } else if (subCategoryName.includes('فساتين') || subCategoryName.includes('العرائس')) {
-          subId = 'wedding_dresses';
-        } else if (subCategoryName.includes('مستلزمات الملابس') || subCategoryName.includes('اكسسوارات ومستلزمات')) {
-          subId = 'accessories_supplies';
-        } else if (subCategoryName.includes('البشرة') || subCategoryName.includes('الوجه')) {
-          subId = 'skincare';
-        } else if (subCategoryName.includes('الشعر') || subCategoryName.includes('الجسم')) {
-          subId = 'hair_body';
-        } else if (subCategoryName.includes('الصحة') || subCategoryName.includes('الإسعافات')) {
-          subId = 'health_first_aid';
-        } else if (subCategoryName.includes('الطفل') || subCategoryName.includes('الرضع')) {
-          subId = 'baby_care';
-        } else if (subCategoryName.includes('بهارات') || subCategoryName.includes('توابل')) {
-          subId = 'basic_spices';
-        } else if (subCategoryName.includes('أعشاب') || subCategoryName.includes('مشروبات')) {
-          subId = 'herbal_drinks';
-        } else if (subCategoryName.includes('وصفات') || subCategoryName.includes('طبيعية')) {
-          subId = 'natural_oils';
-        } else if (subCategoryName.includes('مخبوزات') || subCategoryName.includes('حلويات')) {
-          subId = 'baking_needs';
-        } else if (subCategoryName.includes('هواتف') || subCategoryName.includes('ذكية')) {
-          subId = 'smartphones';
-        } else if (subCategoryName.includes('إكسسوارات') || subCategoryName.includes('اكسسوارات')) {
-          subId = 'accessories';
-        } else if (subCategoryName.includes('شواحن') || subCategoryName.includes('كابلات')) {
-          subId = 'chargers';
-        } else if (subCategoryName.includes('سماعات') || subCategoryName.includes('صوتية')) {
-          subId = 'headphones';
-        } else if (subCategoryName.includes('الغسيل') || subCategoryName.includes('الملابس')) {
-          subId = 'laundry';
-        } else if (subCategoryName.includes('الأطباق') || subCategoryName.includes('المطبخ')) {
-          subId = 'dishes_kitchen';
-        } else if (subCategoryName.includes('مطهرات') || subCategoryName.includes('الأرضيات')) {
-          subId = 'home_sanitizers';
-        } else if (subCategoryName.includes('معطرات') || subCategoryName.includes('مبيدات')) {
-          subId = 'fresheners';
+        if (targetCatId === 'library_tools') {
+          if (subCategoryName.includes('أقلام') || subCategoryName.includes('كتابة')) {
+            subId = 'pens_pencils';
+          } else if (subCategoryName.includes('كشاكيل') || subCategoryName.includes('دفاتر') || subCategoryName.includes('مذكرات')) {
+            subId = 'notebooks_binders';
+          } else if (subCategoryName.includes('الرسم') || subCategoryName.includes('الهندسة')) {
+            subId = 'drawing_engineering';
+          } else if (subCategoryName.includes('حقائب') || subCategoryName.includes('مدرسية')) {
+            subId = 'school_supplies';
+          }
+        } else if (targetCatId === 'books_novels') {
+          if (subCategoryName.includes('روايات') || subCategoryName.includes('مترجمة')) {
+            subId = 'arabic_novels';
+          } else if (subCategoryName.includes('الدينية') || subCategoryName.includes('الإسلامية')) {
+            subId = 'religious_books';
+          } else if (subCategoryName.includes('قصص') || subCategoryName.includes('أطفال')) {
+            subId = 'educational_kids';
+          } else if (subCategoryName.includes('تاريخ') || subCategoryName.includes('سير') || subCategoryName.includes('كتابات')) {
+            subId = 'history_biography';
+          }
+        } else if (targetCatId === 'furniture') {
+          if (subCategoryName.includes('صالون') || subCategoryName.includes('معيشة') || subCategoryName.includes('مجالس')) {
+            subId = 'living_rooms';
+          } else if (subCategoryName.includes('نوم') || subCategoryName.includes('أسرّة') || subCategoryName.includes('دواليب')) {
+            subId = 'bedrooms';
+          } else if (subCategoryName.includes('طاولة') || subCategoryName.includes('طاولات') || subCategoryName.includes('كراسي') || subCategoryName.includes('مكاتب') || subCategoryName.includes('سفرة')) {
+            subId = 'tables_chairs';
+          } else if (subCategoryName.includes('سجاد') || subCategoryName.includes('ديكور') || subCategoryName.includes('إضاءة') || subCategoryName.includes('مستلزمات')) {
+            subId = 'decorations';
+          }
+        } else {
+          if (subCategoryName.includes('عجول') || subCategoryName.includes('تربية')) {
+            subId = 'calves';
+          } else if (subCategoryName.includes('خرفان') || subCategoryName.includes('أغنام')) {
+            subId = 'sheep';
+          } else if (subCategoryName.includes('ماعز') || subCategoryName.includes('جديان')) {
+            subId = 'goats';
+          } else if (subCategoryName.includes('طيور') || subCategoryName.includes('أرانب') || subCategoryName.includes('بط')) {
+            subId = 'rabbits';
+          } else if (subCategoryName.includes('بيض')) {
+            subId = 'eggs';
+          } else if (subCategoryName.includes('سمن') || subCategoryName.includes('زيوت')) {
+            subId = 'oil_grains';
+          } else if (subCategoryName.includes('ألبان') || subCategoryName.includes('جبن')) {
+            subId = 'dairy';
+          } else if (subCategoryName.includes('شاشات')) {
+            subId = 'screens';
+          } else if (subCategoryName.includes('جلابيات')) {
+            subId = 'traditional';
+          } else if (subCategoryName.includes('رجالي')) {
+            subId = 'casual';
+          } else if (subCategoryName.includes('أطفال')) {
+            subId = 'children';
+          } else if (subCategoryName.includes('داخلية')) {
+            subId = 'underwear_lingerie';
+          } else if (subCategoryName.includes('أحذية') || subCategoryName.includes('الأحذية')) {
+            subId = 'shoes';
+          } else if (subCategoryName.includes('فساتين') || subCategoryName.includes('العرائس')) {
+            subId = 'wedding_dresses';
+          } else if (subCategoryName.includes('مستلزمات الملابس') || subCategoryName.includes('اكسسوارات ومستلزمات')) {
+            subId = 'accessories_supplies';
+          } else if (subCategoryName.includes('البشرة') || subCategoryName.includes('الوجه')) {
+            subId = 'skincare';
+          } else if (subCategoryName.includes('الشعر') || subCategoryName.includes('الجسم')) {
+            subId = 'hair_body';
+          } else if (subCategoryName.includes('الصحة') || subCategoryName.includes('الإسعافات')) {
+            subId = 'health_first_aid';
+          } else if (subCategoryName.includes('الطفل') || subCategoryName.includes('الرضع')) {
+            subId = 'baby_care';
+          } else if (subCategoryName.includes('بهارات') || subCategoryName.includes('توابل')) {
+            subId = 'basic_spices';
+          } else if (subCategoryName.includes('أعشاب') || subCategoryName.includes('مشروبات')) {
+            subId = 'herbal_drinks';
+          } else if (subCategoryName.includes('وصفات') || subCategoryName.includes('طبيعية')) {
+            subId = 'natural_oils';
+          } else if (subCategoryName.includes('مخبوزات') || subCategoryName.includes('حلويات')) {
+            subId = 'baking_needs';
+          } else if (subCategoryName.includes('هواتف') || subCategoryName.includes('ذكية')) {
+            subId = 'smartphones';
+          } else if (subCategoryName.includes('إكسسوارات') || subCategoryName.includes('اكسسوارات')) {
+            subId = 'accessories';
+          } else if (subCategoryName.includes('شواحن') || subCategoryName.includes('كابلات')) {
+            subId = 'chargers';
+          } else if (subCategoryName.includes('سماعات') || subCategoryName.includes('صوتية')) {
+            subId = 'headphones';
+          } else if (subCategoryName.includes('الغسيل') || subCategoryName.includes('الملابس')) {
+            subId = 'laundry';
+          } else if (subCategoryName.includes('الأطباق') || subCategoryName.includes('المطبخ')) {
+            subId = 'dishes_kitchen';
+          } else if (subCategoryName.includes('مطهرات') || subCategoryName.includes('الأرضيات')) {
+            subId = 'home_sanitizers';
+          } else if (subCategoryName.includes('معطرات') || subCategoryName.includes('مبيدات')) {
+            subId = 'fresheners';
+          }
         }
       }
       setFilterSubId(subId);

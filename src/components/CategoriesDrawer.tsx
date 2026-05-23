@@ -14,7 +14,10 @@ import {
   Heart,
   Sprout,
   Smartphone,
-  Headphones
+  Headphones,
+  Pencil,
+  BookOpen,
+  Armchair
 } from 'lucide-react';
 
 interface SubSubCategory {
@@ -340,6 +343,129 @@ const DRAWER_CATEGORIES: DrawerCategory[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'library_tools',
+    name: 'أدوات المكتبة والقرطاسية',
+    icon: 'Pencil',
+    color: 'from-violet-500 to-purple-600',
+    targetCatId: 'library_tools',
+    subcategories: [
+      {
+        id: 'pens_pencils',
+        name: 'أقلام وأدوات كتابة',
+        subSubCategories: [
+          { id: 'lib_pens_blue', name: 'أقلام جاف زرقاء وملونة' },
+          { id: 'lib_pencils_wood', name: 'أقلام رصاص خشب وسنون' }
+        ]
+      },
+      {
+        id: 'notebooks_binders',
+        name: 'كشاكيل ودفاتر ومذكرات',
+        subSubCategories: [
+          { id: 'lib_notebooks_class', name: 'كشاكيل مسطرة ومربعات' },
+          { id: 'lib_binders_files', name: 'ملفات وجرابات مستندات' }
+        ]
+      },
+      {
+        id: 'drawing_engineering',
+        name: 'أدوات الرسم والهندسة',
+        subSubCategories: [
+          { id: 'lib_geometry_kits', name: 'علب هندسة وبراجل دقيقة' },
+          { id: 'lib_colors_sketch', name: 'ألوان خشبية وفلوماستر وكشاكيل رسم' }
+        ]
+      },
+      {
+        id: 'school_supplies',
+        name: 'حقائب ومستلزمات مدرسية',
+        subSubCategories: [
+          { id: 'lib_backpacks_box', name: 'حقائب مدرسية للأطفال والشباب' },
+          { id: 'lib_lunchboxes_bottles', name: 'لانش بوكس وزجاجات مياه صحية' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'books_novels',
+    name: 'الكتب والروايات',
+    icon: 'BookOpen',
+    color: 'from-amber-600 to-rose-700',
+    targetCatId: 'books_novels',
+    subcategories: [
+      {
+        id: 'arabic_novels',
+        name: 'روايات عربية ومترجمة',
+        subSubCategories: [
+          { id: 'book_novels_arabic', name: 'روايات تشويق وغموض ودراما' },
+          { id: 'book_novels_translated', name: 'أدب عالمي ومترجم للعربية' }
+        ]
+      },
+      {
+        id: 'religious_books',
+        name: 'الكتب الدينية والإسلامية',
+        subSubCategories: [
+          { id: 'book_qurans_tafseer', name: 'مصاحف شريفة وكتب تفسير' },
+          { id: 'book_prophets_stories', name: 'سير نبوية وقصص السلف الصالح' }
+        ]
+      },
+      {
+        id: 'educational_kids',
+        name: 'قصص وكتب أطفال بصرية',
+        subSubCategories: [
+          { id: 'book_kids_learning', name: 'كتب تعليم الأحرف والأرقام واللوحات' },
+          { id: 'book_kids_stories', name: 'قصص قبل النوم المصورة للأطفال' }
+        ]
+      },
+      {
+        id: 'history_biography',
+        name: 'كتابات تاريخية وسير',
+        subSubCategories: [
+          { id: 'book_history_egypt', name: 'كتب تاريخ مصر وجغرافيا النيل' },
+          { id: 'book_biographies_sci', name: 'سير وتراجم العلماء والعباقرة' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'furniture',
+    name: 'الأثاث ومستلزمات المنزل',
+    icon: 'Armchair',
+    color: 'from-amber-700 to-amber-900',
+    targetCatId: 'furniture',
+    subcategories: [
+      {
+        id: 'living_rooms',
+        name: 'صالونات ومجالس وغرف معيشة',
+        subSubCategories: [
+          { id: 'furn_salons_classic', name: 'صالونات كلاسيك خشب زان' },
+          { id: 'furn_living_modern', name: 'كنب وركنيات مودرن مريحة' }
+        ]
+      },
+      {
+        id: 'bedrooms',
+        name: 'غرف نوم ودواليب وأسرّة',
+        subSubCategories: [
+          { id: 'furn_beds_luxury', name: 'أسرّة وكومودينو مودرن' },
+          { id: 'furn_wardrobes_wood', name: 'دواليب وتصاريح متينة' }
+        ]
+      },
+      {
+        id: 'tables_chairs',
+        name: 'طاولات وكراسي ومكاتب',
+        subSubCategories: [
+          { id: 'furn_dining_tables', name: 'سفرة طعام دائرية ومستطيلة' },
+          { id: 'furn_desks_offices', name: 'مكاتب دراسة وكراسي مريحة' }
+        ]
+      },
+      {
+        id: 'decorations',
+        name: 'سجاد وديكورات وإكسسوارات',
+        subSubCategories: [
+          { id: 'furn_carpets_wool', name: 'سجاد يدوي وصوف صعيدي فاخر' },
+          { id: 'furn_lighting_lamps', name: 'نجف وإضاءة وديكورات مبهجة' }
+        ]
+      }
+    ]
   }
 ];
 
@@ -378,6 +504,9 @@ export default function CategoriesDrawer({ isOpen, onClose, onSelectCategory }: 
       case 'Sprout': return <Sprout className={className} />;
       case 'Smartphone': return <Smartphone className={className} />;
       case 'Headphones': return <Headphones className={className} />;
+      case 'Pencil': return <Pencil className={className} />;
+      case 'BookOpen': return <BookOpen className={className} />;
+      case 'Armchair': return <Armchair className={className} />;
       default: return <Grid className={className} />;
     }
   };

@@ -114,6 +114,9 @@ export default function CategoriesScreen({
                     {cat.id === 'spices_herbs' && '🌿'}
                     {cat.id === 'mobiles_electronics' && '📱'}
                     {cat.id === 'household_cleaning' && '🧼'}
+                    {cat.id === 'library_tools' && '✏️'}
+                    {cat.id === 'books_novels' && '📚'}
+                    {cat.id === 'furniture' && '🛋️'}
                   </span>
                   <span>{cat.name}</span>
                 </div>
@@ -163,7 +166,19 @@ export default function CategoriesScreen({
                       {sub.id === 'baladi_chicken' && '🐓'}
                       {sub.id === 'white_chicken' && '🍗'}
                       {sub.id === 'eggs' && '🍳'}
-                      {sub.parentCategoryId !== 'halal_market' && '📦'}
+                      {sub.id === 'pens_pencils' && '✏️'}
+                      {sub.id === 'notebooks_binders' && '📓'}
+                      {sub.id === 'drawing_engineering' && '📐'}
+                      {sub.id === 'school_supplies' && '🎒'}
+                      {sub.id === 'arabic_novels' && '📖'}
+                      {sub.id === 'religious_books' && '🕌'}
+                      {sub.id === 'educational_kids' && '🧸'}
+                      {sub.id === 'history_biography' && '⏳'}
+                      {sub.id === 'living_rooms' && '🛋️'}
+                      {sub.id === 'bedrooms' && '🛏️'}
+                      {sub.id === 'tables_chairs' && '🪑'}
+                      {sub.id === 'decorations' && '🧶'}
+                      {!['calves', 'sheep', 'goats', 'rabbits', 'ducks', 'baladi_chicken', 'white_chicken', 'eggs', 'pens_pencils', 'notebooks_binders', 'drawing_engineering', 'school_supplies', 'arabic_novels', 'religious_books', 'educational_kids', 'history_biography', 'living_rooms', 'bedrooms', 'tables_chairs', 'decorations'].includes(sub.id) && '📦'}
                     </div>
                     <span className="text-[9px] font-bold text-gray-900 leading-tight line-clamp-2">
                       {sub.name}

@@ -225,6 +225,9 @@ export default function HomeScreen({
                   {cat.id === 'spices_herbs' && '🌿'}
                   {cat.id === 'mobiles_electronics' && '📱'}
                   {cat.id === 'household_cleaning' && '🧼'}
+                  {cat.id === 'library_tools' && '✏️'}
+                  {cat.id === 'books_novels' && '📚'}
+                  {cat.id === 'furniture' && '🛋️'}
                 </div>
                 <span className="text-[10px] font-bold text-gray-900 text-center font-sans line-clamp-1 group-hover:text-teal-800">
                   {cat.name}
@@ -369,7 +372,40 @@ export default function HomeScreen({
                }`}
              >
                🧼 منظفات منزلية
+              </button>
+
+              <button
+                onClick={() => setSelectedMainCat('library_tools')}
+                className={`px-3 py-1 bg-white text-xs font-bold rounded-lg border transition-all ${
+                  selectedMainCat === 'library_tools'
+                    ? 'border-teal-700 text-teal-850 bg-teal-50'
+                    : 'border-slate-100 text-gray-600 hover:border-teal-200'
+                }`}
+              >
+                ✏️ أدوات المكتبة والقرطاسية
+              </button>
+
+              <button
+                onClick={() => setSelectedMainCat('books_novels')}
+                className={`px-3 py-1 bg-white text-xs font-bold rounded-lg border transition-all ${
+                  selectedMainCat === 'books_novels'
+                    ? 'border-teal-700 text-teal-850 bg-teal-50'
+                    : 'border-slate-100 text-gray-600 hover:border-teal-200'
+                }`}
+              >
+                📚 الكتب والروايات
              </button>
+
+              <button
+                onClick={() => setSelectedMainCat('furniture')}
+                className={`px-3 py-1 bg-white text-xs font-bold rounded-lg border transition-all ${
+                  selectedMainCat === 'furniture'
+                    ? 'border-teal-700 text-teal-850 bg-teal-50'
+                    : 'border-slate-100 text-gray-600 hover:border-teal-200'
+                }`}
+              >
+                🛋️ الأثاث والمنزل
+              </button>
           </div>
         </div>
 
