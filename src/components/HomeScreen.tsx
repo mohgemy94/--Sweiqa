@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { BRANDS_AND_SLIDES, CATEGORIES, PRODUCTS } from '../data';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
-import { Search, MapPin, Sparkles, Filter, ShieldCheck, ChevronRight, ChevronLeft, Award } from 'lucide-react';
+import { Search, MapPin, Sparkles, Filter, ShieldCheck, ChevronRight, ChevronLeft, Award, History, X } from 'lucide-react';
 
 interface HomeScreenProps {
   onSelectProduct: (product: Product) => void;
@@ -19,6 +19,13 @@ interface HomeScreenProps {
   onSearchChange?: (val: string) => void;
   favoriteProductIds?: string[];
   onToggleFavorite?: (product: Product, event?: React.MouseEvent) => void;
+  searchHistory?: string[];
+  onAddHistoryItem?: (query: string) => void;
+  onDeleteHistoryItem?: (query: string) => void;
+  onClearHistory?: () => void;
+  compareProductIds?: string[];
+  onToggleCompare?: (product: Product, event?: React.MouseEvent) => void;
+  onViewDetail?: (product: Product) => void;
 }
 
 // Helper to get custom premium visual colors for each category section
@@ -108,10 +115,18 @@ export default function HomeScreen({
   searchQuery = '',
   onSearchChange = () => {},
   favoriteProductIds = [],
-  onToggleFavorite
+  onToggleFavorite,
+  searchHistory = [],
+  onAddHistoryItem,
+  onDeleteHistoryItem,
+  onClearHistory,
+  compareProductIds = [],
+  onToggleCompare,
+  onViewDetail
 }: HomeScreenProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedMainCat, setSelectedMainCat] = useState<string>('all');
+  const [isHomeHistoryVisible, setIsHomeHistoryVisible] = useState(false);
 
   // Auto slide Carousel
   useEffect(() => {
@@ -181,17 +196,7 @@ export default function HomeScreen({
           )}
         </div>
 
-        {/* Global Instant Search Input */}
-        <div className="mt-4 relative z-10">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="ابحث عن: عجل بقري، دجاج ريفي، زيت خليط، جلابيات صعيدي..."
-            className="w-full bg-white text-gray-900 placeholder:text-gray-400 text-xs py-3.5 max-h-12 pr-11 pl-4 rounded-xl border-none outline-none ring-2 ring-transparent focus:ring-yellow-400 transition-all font-sans shadow-md"
-          />
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-        </div>
+
       </div>
 
       {/* Slide Carousel - Noon Style Banners */}
@@ -513,6 +518,9 @@ export default function HomeScreen({
                 isInCart={cartProductIds.includes(product.id)}
                 isFavorite={favoriteProductIds.includes(product.id)}
                 onToggleFavorite={onToggleFavorite}
+                isComparing={compareProductIds.includes(product.id)}
+                onToggleCompare={onToggleCompare}
+                onViewDetail={onViewDetail}
               />
             ))}
           </div>

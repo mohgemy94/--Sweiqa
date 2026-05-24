@@ -11,6 +11,9 @@ import CartScreen from './components/CartScreen';
 import ProfileScreen from './components/ProfileScreen';
 import ProductDetailModal from './components/ProductDetailModal';
 import CategoriesDrawer from './components/CategoriesDrawer';
+import CompareDrawer from './components/CompareDrawer';
+import ProductDetailPage from './components/ProductDetailPage';
+import { PRODUCTS } from './data';
 
 // Lucide Icons
 import { 
@@ -20,7 +23,9 @@ import {
   User, 
   Menu,
   Search,
-  Mic
+  Mic,
+  History,
+  X
 } from 'lucide-react';
 
 export default function App() {
@@ -28,6 +33,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'categories' | 'cart' | 'profile'>('home');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [detailedProduct, setDetailedProduct] = useState<Product | null>(null);
 
   // Favorite product list persistent state
   const [favoriteProductIds, setFavoriteProductIds] = useState<string[]>(() => {
@@ -59,6 +65,52 @@ export default function App() {
   const [isSearchVisible, setIsSearchVisible] = useState(true);
   const scrollTimeoutRef = useRef<any>(null);
 
+  // Search history state and visibility
+  const [isHistoryDropdownVisible, setIsHistoryDropdownVisible] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('search_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const handleAddHistoryItem = (query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    setSearchHistory(prev => {
+      const next = [trimmed, ...prev.filter(q => q !== trimmed)].slice(0, 10);
+      try {
+        localStorage.setItem('search_history', JSON.stringify(next));
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+  };
+
+  const handleDeleteHistoryItem = (query: string) => {
+    setSearchHistory(prev => {
+      const next = prev.filter(q => q !== query);
+      try {
+        localStorage.setItem('search_history', JSON.stringify(next));
+      } catch (e) {
+        console.error(e);
+      }
+      return next;
+    });
+  };
+
+  const handleClearHistory = () => {
+    setSearchHistory([]);
+    try {
+      localStorage.removeItem('search_history');
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // Speech recognition states
   const [isListening, setIsListening] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
@@ -87,6 +139,7 @@ export default function App() {
       const speechToText = event.results[0][0].transcript;
       setRecognitionText(speechToText);
       setSearchQuery(speechToText);
+      handleAddHistoryItem(speechToText);
     };
 
     recognition.onerror = (event: any) => {
@@ -113,6 +166,34 @@ export default function App() {
   // Navigation filters mapping
   const [filterCatId, setFilterCatId] = useState<string>('halal_market');
   const [filterSubId, setFilterSubId] = useState<string>('');
+
+  // Comparison State
+  const [compareProductIds, setCompareProductIds] = useState<string[]>([]);
+  const [isCompareDrawerOpen, setIsCompareDrawerOpen] = useState(false);
+  const [compareError, setCompareError] = useState<string | null>(null);
+
+  const handleToggleCompare = (product: Product, event?: React.MouseEvent) => {
+    if (event) event.stopPropagation();
+    setCompareProductIds(prev => {
+      const isExist = prev.includes(product.id);
+      if (isExist) {
+        return prev.filter(id => id !== product.id);
+      } else {
+        if (prev.length >= 2) {
+          setCompareError("⚠️ الحد الأقصى للمقارنة هو منتجين فقط. يرجى إزالة أحد المنتجات للمقارنة أولاً.");
+          setTimeout(() => setCompareError(null), 4500);
+          return prev;
+        }
+        return [...prev, product.id];
+      }
+    });
+  };
+
+  const handleRemoveFromCompare = (productId: string) => {
+    setCompareProductIds(prev => prev.filter(id => id !== productId));
+  };
+
+  const compareProducts = PRODUCTS.filter(p => compareProductIds.includes(p.id));
 
   // Shopping Cart calculations
   const totalCartItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -158,6 +239,7 @@ export default function App() {
   };
 
   const handleSelectCategoryFilter = (catId: string, subId?: string) => {
+    setDetailedProduct(null);
     setFilterCatId(catId);
     setFilterSubId(subId || '');
     setActiveTab('categories');
@@ -280,6 +362,7 @@ export default function App() {
       setSearchQuery('');
     }
 
+    setDetailedProduct(null);
     setActiveTab('categories');
   };
 
@@ -307,10 +390,10 @@ export default function App() {
           
           <div className="flex items-center justify-between w-full sm:w-auto">
             {/* Logo and Menu Panel trigger */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between w-full sm:w-auto relative py-1.5 md:gap-4">
               <button 
                 onClick={() => setIsDrawerOpen(true)}
-                className="p-2.5 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-xl transition-all border border-teal-100 flex items-center justify-center cursor-pointer"
+                className="p-2.5 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-xl transition-all border border-teal-100 flex items-center justify-center cursor-pointer z-10"
                 title="قائمة الأقسام الكاملة"
               >
                 <Menu className="w-5 h-5" />
@@ -318,21 +401,16 @@ export default function App() {
 
               <div 
                 onClick={() => { setActiveTab('home'); setSearchQuery(''); }}
-                className="flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 cursor-pointer select-none active:scale-95 transition-transform"
               >
-                <span className="text-base sm:text-lg font-black text-teal-900 tracking-wider font-sans">
+                <span className="text-base sm:text-lg font-black text-teal-900 tracking-wider font-sans whitespace-nowrap">
                   سوق الصعيد 🌾
                 </span>
               </div>
-            </div>
 
-            {/* Quick sections shortcuts overlay badge */}
-            <button 
-              onClick={() => setIsDrawerOpen(true)}
-              className="text-xs bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-black cursor-pointer hover:bg-teal-50 hover:border-teal-200 transition-all font-sans"
-            >
-              كل الأقسام 📋
-            </button>
+              {/* Empty placeholder on the left to balance the header visually on mobile */}
+              <div className="w-10 h-10 sm:hidden"></div>
+            </div>
           </div>
 
           {/* Search bar - centered and clean */}
@@ -341,11 +419,34 @@ export default function App() {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsHistoryDropdownVisible(true)}
+                onBlur={() => {
+                  setTimeout(() => setIsHistoryDropdownVisible(false), 250);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAddHistoryItem(searchQuery);
+                    setIsHistoryDropdownVisible(false);
+                  }
+                }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setDetailedProduct(null);
+                }}
                 placeholder="ابحث عن: عجل بلدي، غسالات، عبايات، زيت طعام..."
-                className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-400 text-xs py-3 pr-9 pl-16 rounded-xl border border-slate-200 focus:border-teal-700 focus:bg-white outline-none transition-all font-sans text-right"
+                className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-400 text-xs py-3 pr-11 pl-16 rounded-xl border border-slate-200 focus:border-teal-700 focus:bg-white outline-none transition-all font-sans text-right"
               />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-teal-800 w-4 h-4" />
+              <button
+                type="button"
+                onClick={() => {
+                  handleAddHistoryItem(searchQuery);
+                  setIsHistoryDropdownVisible(false);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-teal-850 hover:text-teal-950 hover:bg-teal-50 active:scale-95 transition-all cursor-pointer flex items-center justify-center"
+                title="بحث"
+              >
+                <Search className="w-4 h-4 stroke-[2.5]" />
+              </button>
               
               {/* Voice Search Mic Button */}
               <button
@@ -369,6 +470,56 @@ export default function App() {
                 </button>
               )}
             </div>
+
+            {/* Search History Dropdown */}
+            {isHistoryDropdownVisible && searchHistory.length > 0 && (
+              <div className="absolute top-12 left-0 right-0 bg-white border border-slate-200 shadow-2xl rounded-xl z-55 overflow-hidden text-right select-none animate-slide-entrance">
+                <div className="flex items-center justify-between p-3.5 bg-slate-50 border-b border-slate-100/80 text-[11px] font-black text-slate-600">
+                  <span className="flex items-center gap-1.5">
+                    <History className="w-3.5 h-3.5 text-teal-800" />
+                    عمليات البحث الأخيرة
+                  </span>
+                  <button
+                    onMouseDown={(e) => {
+                      e.preventDefault(); // Prevents input blur
+                      handleClearHistory();
+                    }}
+                    className="text-rose-600 hover:text-rose-800 text-[10px] font-black cursor-pointer bg-transparent border-none p-0"
+                  >
+                    مسح السجل بالكامل
+                  </button>
+                </div>
+                <div className="max-h-56 overflow-y-auto divide-y divide-slate-50">
+                  {searchHistory.map((term, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between px-3.5 py-2.5 hover:bg-teal-50/40 cursor-pointer text-xs group transition-colors"
+                      onMouseDown={(e) => {
+                        e.preventDefault(); // Prevents input blur
+                        setSearchQuery(term);
+                        setIsHistoryDropdownVisible(false);
+                      }}
+                    >
+                      <span className="text-slate-800 font-bold font-sans flex items-center gap-2">
+                        <Search className="w-3 h-3 text-slate-400" />
+                        {term}
+                      </span>
+                      <button
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Prevents input blur
+                          e.stopPropagation();
+                          handleDeleteHistoryItem(term);
+                        }}
+                        className="p-1 text-slate-400 hover:text-rose-500 rounded-md hover:bg-slate-100 opacity-60 hover:opacity-100 transition-all cursor-pointer"
+                        title="حذف"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Speech Recognition Overlay Feedback */}
             {isListening && (
@@ -409,47 +560,77 @@ export default function App() {
 
       {/* Interactive Content View Area */}
       <main className="flex-grow max-w-5xl w-full mx-auto px-4 py-6 md:py-8">
-        {activeTab === 'home' && (
-          <HomeScreen 
-            onSelectProduct={handleSelectProduct}
+        {detailedProduct ? (
+          <ProductDetailPage 
+            product={detailedProduct}
+            onBack={() => setDetailedProduct(null)}
             onAddToCart={handleAddToCart}
             cartProductIds={cartItems.map(item => item.product.id)}
-            onChangeTab={setActiveTab}
-            onSelectCategoryFilter={handleSelectCategoryFilter}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
             favoriteProductIds={favoriteProductIds}
             onToggleFavorite={handleToggleFavorite}
-          />
-        )}
-        {activeTab === 'categories' && (
-          <CategoriesScreen 
+            compareProductIds={compareProductIds}
+            onToggleCompare={handleToggleCompare}
             onSelectProduct={handleSelectProduct}
-            onAddToCart={handleAddToCart}
-            cartProductIds={cartItems.map(item => item.product.id)}
-            initialCategory={filterCatId}
-            initialSubCategory={filterSubId}
-            searchQuery={searchQuery}
-            favoriteProductIds={favoriteProductIds}
-            onToggleFavorite={handleToggleFavorite}
+            onViewDetail={(p) => setDetailedProduct(p)}
           />
-        )}
-        {activeTab === 'cart' && (
-          <CartScreen 
-            cartItems={cartItems}
-            onUpdateQuantity={handleUpdateQuantity}
-            onRemoveItem={handleRemoveItem}
-            onClearCart={handleClearCart}
-          />
-        )}
-        {activeTab === 'profile' && (
-          <ProfileScreen 
-            favoriteProductIds={favoriteProductIds}
-            onSelectProduct={handleSelectProduct}
-            onAddToCart={handleAddToCart}
-            cartProductIds={cartItems.map(item => item.product.id)}
-            onToggleFavorite={handleToggleFavorite}
-          />
+        ) : (
+          <>
+            {activeTab === 'home' && (
+              <HomeScreen 
+                onSelectProduct={handleSelectProduct}
+                onAddToCart={handleAddToCart}
+                cartProductIds={cartItems.map(item => item.product.id)}
+                onChangeTab={(tabId) => { setDetailedProduct(null); setActiveTab(tabId); }}
+                onSelectCategoryFilter={handleSelectCategoryFilter}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                favoriteProductIds={favoriteProductIds}
+                onToggleFavorite={handleToggleFavorite}
+                searchHistory={searchHistory}
+                onAddHistoryItem={handleAddHistoryItem}
+                onDeleteHistoryItem={handleDeleteHistoryItem}
+                onClearHistory={handleClearHistory}
+                compareProductIds={compareProductIds}
+                onToggleCompare={handleToggleCompare}
+                onViewDetail={(p) => setDetailedProduct(p)}
+              />
+            )}
+            {activeTab === 'categories' && (
+              <CategoriesScreen 
+                onSelectProduct={handleSelectProduct}
+                onAddToCart={handleAddToCart}
+                cartProductIds={cartItems.map(item => item.product.id)}
+                initialCategory={filterCatId}
+                initialSubCategory={filterSubId}
+                searchQuery={searchQuery}
+                favoriteProductIds={favoriteProductIds}
+                onToggleFavorite={handleToggleFavorite}
+                compareProductIds={compareProductIds}
+                onToggleCompare={handleToggleCompare}
+                onViewDetail={(p) => setDetailedProduct(p)}
+              />
+            )}
+            {activeTab === 'cart' && (
+              <CartScreen 
+                cartItems={cartItems}
+                onUpdateQuantity={handleUpdateQuantity}
+                onRemoveItem={handleRemoveItem}
+                onClearCart={handleClearCart}
+              />
+            )}
+            {activeTab === 'profile' && (
+              <ProfileScreen 
+                favoriteProductIds={favoriteProductIds}
+                onSelectProduct={handleSelectProduct}
+                onAddToCart={handleAddToCart}
+                cartProductIds={cartItems.map(item => item.product.id)}
+                onToggleFavorite={handleToggleFavorite}
+                compareProductIds={compareProductIds}
+                onToggleCompare={handleToggleCompare}
+                onViewDetail={(p) => setDetailedProduct(p)}
+              />
+            )}
+          </>
         )}
       </main>
 
@@ -465,7 +646,7 @@ export default function App() {
         
         {/* Home tab */}
         <button
-          onClick={() => setActiveTab('home')}
+          onClick={() => { setDetailedProduct(null); setActiveTab('home'); }}
           className={`flex flex-col items-center gap-1.5 py-1 px-4 rounded-xl transition-all cursor-pointer ${
             activeTab === 'home' ? 'text-teal-700 bg-teal-50' : 'text-gray-500 hover:text-gray-700'
           }`}
@@ -477,6 +658,7 @@ export default function App() {
         {/* Categories Tab */}
         <button
           onClick={() => {
+            setDetailedProduct(null);
             setFilterCatId('halal_market');
             setFilterSubId('');
             setActiveTab('categories');
@@ -491,7 +673,7 @@ export default function App() {
 
         {/* Shopping Cart Tab */}
         <button
-          onClick={() => setActiveTab('cart')}
+          onClick={() => { setDetailedProduct(null); setActiveTab('cart'); }}
           className={`flex flex-col items-center gap-1.5 py-1 px-4 rounded-xl relative transition-all cursor-pointer ${
             activeTab === 'cart' ? 'text-teal-700 bg-teal-50' : 'text-gray-500 hover:text-gray-700'
           }`}
@@ -508,7 +690,7 @@ export default function App() {
 
         {/* Profile Tab */}
         <button
-          onClick={() => setActiveTab('profile')}
+          onClick={() => { setDetailedProduct(null); setActiveTab('profile'); }}
           className={`flex flex-col items-center gap-1.5 py-1 px-4 rounded-xl transition-all cursor-pointer ${
             activeTab === 'profile' ? 'text-teal-700 bg-teal-50' : 'text-gray-500 hover:text-gray-700'
           }`}
@@ -526,6 +708,45 @@ export default function App() {
         onAddToCart={(p) => handleAddToCart(p, null)}
         isInCart={cartItems.some(item => item.product.id === (selectedProduct?.id || ''))}
       />
+
+      {/* Compare products side drawer table panel */}
+      <CompareDrawer 
+        isOpen={isCompareDrawerOpen}
+        onClose={() => setIsCompareDrawerOpen(false)}
+        products={compareProducts}
+        onRemoveFromCompare={handleRemoveFromCompare}
+        onAddToCart={(p) => handleAddToCart(p, null)}
+        cartProductIds={cartItems.map(item => item.product.id)}
+      />
+
+      {/* Floating compare tracker widget pill */}
+      {compareProductIds.length > 0 && (
+        <div className="fixed bottom-24 left-4 z-40 transition-all duration-300 transform scale-100 hover:scale-103">
+          <button
+            onClick={() => setIsCompareDrawerOpen(true)}
+            className="bg-gradient-to-r from-teal-850 to-emerald-900 border border-teal-700/60 text-white shadow-2xl hover:scale-103 active:scale-95 transition-all text-[11px] font-black px-4.5 py-3 rounded-2xl flex items-center gap-2 cursor-pointer"
+          >
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>⚖️ مقارنة المنتجات ({compareProductIds.length}/٢)</span>
+            
+            {compareProductIds.length === 2 && (
+              <span className="bg-rose-500 text-[8px] font-sans font-black text-white px-1.5 py-0.5 rounded-md leading-none animate-pulse">
+                جاهز!
+              </span>
+            )}
+          </button>
+        </div>
+      )}
+
+      {/* Toast Notification for Compare Limit Error */}
+      {compareError && (
+        <div className="fixed top-24 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:max-w-md z-55 bg-rose-600 border border-rose-500 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center justify-between font-sans text-xs font-bold leading-normal animate-bounce">
+          <span>{compareError}</span>
+          <button onClick={() => setCompareError(null)} className="text-white hover:text-slate-200">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Footer system status */}
       <footer className="bg-slate-950 text-slate-400 text-xs py-6 px-4 text-center border-t border-slate-900 mt-12">

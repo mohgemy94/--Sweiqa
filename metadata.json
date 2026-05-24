@@ -1,6 +1,6 @@
 {
   "name": "سوق الصعيد التجاري",
   "description": "منصة تجارة إلكترونية متطورة مخصصة لمدينة بني مزار ومحافظة المنيا، تركز على المنتجات والسلع الاستهلاكية مع قسم خاص للثروة الحيوانية والداجنة وسوق الحلال.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["microphone", "geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

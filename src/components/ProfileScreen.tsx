@@ -15,6 +15,9 @@ interface ProfileScreenProps {
   onAddToCart?: (p: Product, e: React.MouseEvent | null) => void;
   cartProductIds?: string[];
   onToggleFavorite?: (product: Product, event?: React.MouseEvent) => void;
+  compareProductIds?: string[];
+  onToggleCompare?: (product: Product, event?: React.MouseEvent) => void;
+  onViewDetail?: (product: Product) => void;
 }
 
 export default function ProfileScreen({
@@ -22,7 +25,10 @@ export default function ProfileScreen({
   onSelectProduct = () => {},
   onAddToCart = () => {},
   cartProductIds = [],
-  onToggleFavorite
+  onToggleFavorite,
+  compareProductIds = [],
+  onToggleCompare,
+  onViewDetail
 }: ProfileScreenProps) {
   const [activeTab, setActiveTab] = useState<'info' | 'orders' | 'investment' | 'favorites'>('info');
 
@@ -610,6 +616,9 @@ export default function ProfileScreen({
                   isInCart={cartProductIds.includes(product.id)}
                   isFavorite={true}
                   onToggleFavorite={onToggleFavorite}
+                  isComparing={compareProductIds.includes(product.id)}
+                  onToggleCompare={onToggleCompare}
+                  onViewDetail={onViewDetail}
                 />
               ))}
             </div>

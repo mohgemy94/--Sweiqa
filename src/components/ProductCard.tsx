@@ -15,6 +15,9 @@ interface ProductCardProps {
   isInCart: boolean;
   isFavorite?: boolean;
   onToggleFavorite?: (product: Product, e: React.MouseEvent) => void;
+  isComparing?: boolean;
+  onToggleCompare?: (product: Product, e: React.MouseEvent) => void;
+  onViewDetail?: (product: Product) => void;
 }
 
 export default function ProductCard({ 
@@ -23,7 +26,10 @@ export default function ProductCard({
   onAddToCart, 
   isInCart,
   isFavorite = false,
-  onToggleFavorite
+  onToggleFavorite,
+  isComparing = false,
+  onToggleCompare,
+  onViewDetail
 }: ProductCardProps) {
   const isLivestock = product.categoryId === 'halal_market';
 
@@ -112,7 +118,17 @@ export default function ProductCard({
           </div>
 
           {/* Title */}
-          <h4 className="text-slate-900 font-sans font-bold text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-2.5 group-hover:text-emerald-750 transition-colors">
+          <h4 
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onViewDetail) {
+                onViewDetail(product);
+              } else {
+                onSelect(product);
+              }
+            }}
+            className="text-slate-900 font-sans font-bold text-xs sm:text-[13px] line-clamp-2 leading-relaxed mb-2.5 hover:text-emerald-700 hover:underline hover:underline-offset-2 transition-colors cursor-pointer"
+          >
             {product.name}
           </h4>
 
@@ -133,36 +149,70 @@ export default function ProductCard({
         </div>
 
         {/* Price and Cart Button */}
-        <div className="mt-2.5 pt-2.5 border-t border-slate-100/70 flex items-center justify-between">
-          <div className="font-sans">
+        <div className="mt-2.5 pt-2.5 border-t border-slate-100/70 flex flex-col gap-2">
+          {/* Price Line - Full Width */}
+          <div className="font-sans flex items-center justify-between gap-1 flex-wrap">
             <div className="flex items-baseline gap-0.5">
               <span className="text-sm sm:text-base font-black text-slate-900 tracking-tight">{product.price.toLocaleString('ar-EG')}</span>
-              <span className="text-[9px] font-extrabold text-slate-500">ج.م</span>
+              <span className="text-[9px] font-extrabold text-slate-500 mr-0.5">ج.م</span>
             </div>
-            {isLivestock && product.livestockInfo?.priceType === 'per_kilo' && (
-              <span className="text-[9px] font-extrabold text-emerald-800 block -mt-1 bg-emerald-50 px-1 rounded-sm">سعر الكيلو قائم</span>
-            )}
+            
             {product.originalPrice && (
-              <span className="text-[10px] text-slate-400 line-through block -mt-0.5">
+              <span className="text-[10px] text-slate-400 line-through">
                 {product.originalPrice.toLocaleString('ar-EG')} ج.م
               </span>
             )}
           </div>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddToCart(product, e);
-            }}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-              isInCart 
-                ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs shadow-emerald-200' 
-                : 'bg-emerald-850 text-white hover:bg-emerald-900 shadow-2xs shadow-emerald-100 active:scale-95'
-            }`}
-            title={isInCart ? 'في السلة' : 'إضافة إلى السلة'}
-          >
-            {isInCart ? <Check className="w-4 h-4 stroke-[2.5]" /> : <ShoppingCart className="w-4 h-4" />}
-          </button>
+          {/* Type Tag & Actions Line */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              {isLivestock && product.livestockInfo?.priceType === 'per_kilo' ? (
+                <span className="text-[9px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-md inline-block max-w-full truncate">
+                  سعر الكيلو قائم
+                </span>
+              ) : (
+                <span className="text-[9px] text-slate-400 block truncate">
+                  متاح للتسليم
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {onToggleCompare && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleCompare(product, e);
+                  }}
+                  className={`w-8.5 h-8.5 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                    isComparing 
+                      ? 'bg-teal-600/90 text-white font-extrabold shadow-2xs shadow-teal-150' 
+                      : 'bg-slate-150/70 hover:bg-slate-200 text-slate-500 hover:text-slate-700'
+                  }`}
+                  title={isComparing ? 'إزالة من المقارنة' : 'مقارنة المنتجات'}
+                >
+                  <span className="text-xs">⚖️</span>
+                </button>
+              )}
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddToCart(product, e);
+                }}
+                className={`w-8.5 h-8.5 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                  isInCart 
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs shadow-emerald-250' 
+                    : 'bg-teal-700 text-white hover:bg-teal-800 shadow-2xs shadow-teal-100 active:scale-95'
+                }`}
+                title={isInCart ? 'في السلة' : 'إضافة إلى السلة'}
+              >
+                {isInCart ? <Check className="w-3.5 h-3.5 stroke-[2.5]" /> : <ShoppingCart className="w-3.5 h-3.5 text-white" />}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
