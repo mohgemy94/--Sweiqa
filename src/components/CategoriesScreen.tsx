@@ -98,14 +98,16 @@ export default function CategoriesScreen({
                   setSelectedMainCat(cat.id);
                   setSelectedSubCat(''); // Reset subcategory when switching main categories
                 }}
-                className={`flex-1 md:flex-initial text-right text-xs py-3 px-4 rounded-xl font-bold flex items-center justify-between gap-2 whitespace-nowrap transition-all ${
+                className={`flex-1 md:flex-initial text-right text-xs py-3.5 px-4 rounded-xl font-bold flex items-center justify-between gap-2 whitespace-nowrap transition-all duration-200 border-r-4 ${
                   isSelected 
-                    ? 'bg-teal-700 text-white shadow-sm' 
-                    : 'bg-white text-gray-700 border border-slate-100 hover:border-teal-200 hover:bg-teal-50/20'
+                    ? 'bg-gradient-to-r from-teal-700 to-teal-850 text-white shadow-md border-amber-400' 
+                    : 'bg-white text-gray-700 border-slate-100 hover:border-teal-200 hover:bg-teal-50/25 border-r-transparent'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span>
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                    isSelected ? 'bg-white/15' : 'bg-slate-50'
+                  }`}>
                     {cat.id === 'halal_market' && '🐄'}
                     {cat.id === 'supermarket' && '🛒'}
                     {cat.id === 'electronics' && '📺'}
@@ -118,11 +120,11 @@ export default function CategoriesScreen({
                     {cat.id === 'books_novels' && '📚'}
                     {cat.id === 'furniture' && '🛋️'}
                   </span>
-                  <span>{cat.name}</span>
+                  <span className="font-sans leading-none">{cat.name}</span>
                 </div>
                 {cat.isSpecial && !isSelected && (
-                  <span className="text-[8px] bg-teal-50 border border-teal-100 text-teal-800 px-1 rounded-sm">
-                    خاص
+                  <span className="text-[8px] bg-teal-50 border border-teal-100 text-teal-800 font-extrabold px-1.5 py-0.5 rounded-sm">
+                    مميز
                   </span>
                 )}
               </button>

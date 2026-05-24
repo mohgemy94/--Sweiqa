@@ -21,6 +21,84 @@ interface HomeScreenProps {
   onToggleFavorite?: (product: Product, event?: React.MouseEvent) => void;
 }
 
+// Helper to get custom premium visual colors for each category section
+const getCategoryBadgeStyle = (id: string) => {
+  switch (id) {
+    case 'halal_market':
+      return {
+        gradient: 'bg-gradient-to-tr from-amber-500 to-red-650 text-white shadow-xs shadow-amber-100',
+        bgLight: 'bg-amber-50/40 border-amber-100 hover:border-amber-300 hover:bg-amber-50',
+        text: 'text-amber-900 group-hover:text-amber-700'
+      };
+    case 'supermarket':
+      return {
+        gradient: 'bg-gradient-to-tr from-emerald-500 to-teal-700 text-white shadow-xs shadow-emerald-100',
+        bgLight: 'bg-emerald-50/40 border-emerald-100 hover:border-emerald-300 hover:bg-emerald-50',
+        text: 'text-emerald-900 group-hover:text-emerald-700'
+      };
+    case 'electronics':
+      return {
+        gradient: 'bg-gradient-to-tr from-blue-500 to-indigo-700 text-white shadow-xs shadow-blue-100',
+        bgLight: 'bg-blue-50/40 border-blue-100 hover:border-blue-300 hover:bg-blue-50',
+        text: 'text-blue-900 group-hover:text-blue-700'
+      };
+    case 'fashion':
+      return {
+        gradient: 'bg-gradient-to-tr from-rose-400 to-pink-650 text-white shadow-xs shadow-pink-100',
+        bgLight: 'bg-rose-50/40 border-rose-100 hover:border-rose-300 hover:bg-rose-50',
+        text: 'text-rose-900 group-hover:text-rose-700'
+      };
+    case 'skincare_health':
+      return {
+        gradient: 'bg-gradient-to-tr from-pink-400 to-rose-500 text-white shadow-xs shadow-rose-100',
+        bgLight: 'bg-pink-50/40 border-pink-100 hover:border-pink-300 hover:bg-pink-50',
+        text: 'text-pink-900 group-hover:text-pink-700'
+      };
+    case 'spices_herbs':
+      return {
+        gradient: 'bg-gradient-to-tr from-teal-500 to-green-650 text-white shadow-xs shadow-green-100',
+        bgLight: 'bg-teal-50/40 border-teal-100 hover:border-teal-300 hover:bg-teal-50',
+        text: 'text-teal-900 group-hover:text-teal-700'
+      };
+    case 'mobiles_electronics':
+      return {
+        gradient: 'bg-gradient-to-tr from-violet-500 to-indigo-700 text-white shadow-xs shadow-indigo-100',
+        bgLight: 'bg-indigo-50/40 border-indigo-100 hover:border-indigo-300 hover:bg-indigo-50',
+        text: 'text-indigo-900 group-hover:text-indigo-700'
+      };
+    case 'household_cleaning':
+      return {
+        gradient: 'bg-gradient-to-tr from-cyan-550 to-blue-650 text-white shadow-xs shadow-cyan-100',
+        bgLight: 'bg-cyan-50/40 border-cyan-100 hover:border-cyan-300 hover:bg-cyan-50',
+        text: 'text-cyan-900 group-hover:text-cyan-700'
+      };
+    case 'library_tools':
+      return {
+        gradient: 'bg-gradient-to-tr from-amber-400 to-yellow-600 text-white shadow-xs shadow-yellow-100',
+        bgLight: 'bg-yellow-50/40 border-yellow-100 hover:border-yellow-300 hover:bg-yellow-50',
+        text: 'text-amber-900 group-hover:text-amber-700'
+      };
+    case 'books_novels':
+      return {
+        gradient: 'bg-gradient-to-tr from-gray-500 to-slate-700 text-white shadow-xs shadow-slate-100',
+        bgLight: 'bg-slate-50/40 border-slate-100 hover:border-slate-300 hover:bg-slate-50',
+        text: 'text-slate-900 group-hover:text-slate-700 font-sans'
+      };
+    case 'furniture':
+      return {
+        gradient: 'bg-gradient-to-tr from-yellow-700 to-amber-900 text-white shadow-xs shadow-amber-150',
+        bgLight: 'bg-amber-50/30 border-amber-100/80 hover:border-amber-305 hover:bg-amber-50/70',
+        text: 'text-amber-950 group-hover:text-amber-800'
+      };
+    default:
+      return {
+        gradient: 'bg-gradient-to-tr from-teal-600 to-teal-850 text-white shadow-xs shadow-teal-100',
+        bgLight: 'bg-teal-50/40 border-teal-100 hover:border-teal-300 hover:bg-teal-50',
+        text: 'text-teal-900 group-hover:text-teal-700'
+      };
+  }
+};
+
 export default function HomeScreen({ 
   onSelectProduct, 
   onAddToCart, 
@@ -197,9 +275,10 @@ export default function HomeScreen({
           </button>
         </div>
 
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 gap-3 sm:gap-4">
           {CATEGORIES.map((cat) => {
             const isSpecial = cat.isSpecial;
+            const style = getCategoryBadgeStyle(cat.id);
             return (
               <div
                 key={cat.id}
@@ -207,33 +286,32 @@ export default function HomeScreen({
                   onSelectCategoryFilter(cat.id);
                   onChangeTab('categories');
                 }}
-                className={`cursor-pointer group flex flex-col items-center p-3 rounded-xl border transition-all ${
+                className={`cursor-pointer group flex flex-col items-center p-3 rounded-xl border transition-all duration-300 ${
                   isSpecial
-                    ? 'bg-teal-50/50 border-teal-100 hover:border-teal-300 hover:bg-teal-50'
-                    : 'bg-white border-slate-100 hover:border-teal-200 hover:bg-teal-50/10'
+                    ? 'bg-gradient-to-b from-teal-50/40 via-white to-teal-50/10 border-teal-200/80 shadow-xs hover:border-teal-400 hover:shadow-xs'
+                    : 'bg-white border-slate-100/90 shadow-2xs hover:border-teal-200 hover:shadow-xs'
                 }`}
               >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-1.5 transition-transform group-hover:scale-105 duration-300 ${
-                  isSpecial ? 'bg-teal-700 text-white' : 'bg-teal-50 text-teal-800'
-                }`}>
-                  {/* Custom representation of category icons */}
-                  {cat.id === 'halal_market' && '🐄'}
-                  {cat.id === 'supermarket' && '🛒'}
-                  {cat.id === 'electronics' && '📺'}
-                  {cat.id === 'fashion' && '🧥'}
-                  {cat.id === 'skincare_health' && '🧴'}
-                  {cat.id === 'spices_herbs' && '🌿'}
-                  {cat.id === 'mobiles_electronics' && '📱'}
-                  {cat.id === 'household_cleaning' && '🧼'}
-                  {cat.id === 'library_tools' && '✏️'}
-                  {cat.id === 'books_novels' && '📚'}
-                  {cat.id === 'furniture' && '🛋️'}
+                <div className={`w-11 h-11 rounded-full flex items-center justify-center mb-1.5 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-xs ${style.gradient}`}>
+                  <span className="text-lg">
+                    {cat.id === 'halal_market' && '🐄'}
+                    {cat.id === 'supermarket' && '🛒'}
+                    {cat.id === 'electronics' && '📺'}
+                    {cat.id === 'fashion' && '🧥'}
+                    {cat.id === 'skincare_health' && '🧴'}
+                    {cat.id === 'spices_herbs' && '🌿'}
+                    {cat.id === 'mobiles_electronics' && '📱'}
+                    {cat.id === 'household_cleaning' && '🧼'}
+                    {cat.id === 'library_tools' && '✏️'}
+                    {cat.id === 'books_novels' && '📚'}
+                    {cat.id === 'furniture' && '🛋️'}
+                  </span>
                 </div>
-                <span className="text-[10px] font-bold text-gray-900 text-center font-sans line-clamp-1 group-hover:text-teal-800">
+                <span className="text-[10px] font-extrabold text-slate-800 text-center font-sans tracking-tight line-clamp-1 group-hover:text-teal-800 transition-colors">
                   {cat.name}
                 </span>
                 {isSpecial && (
-                  <span className="text-[8px] text-teal-700 bg-teal-100 px-1 rounded-sm mt-0.5">مميز</span>
+                  <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1 border border-rose-100 rounded-sm mt-1 scale-90">مميز</span>
                 )}
               </div>
             );
